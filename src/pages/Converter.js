@@ -22,7 +22,8 @@ var regRRN = new RegExp(/([0-9]{2}(?:0[1-9]|1[0-2])(0[1-9]|[1,2][0-9]|3[0,1]))-?
 var regAge = new RegExp(/([0-9]{0,4}((?=세)|(?=살)|(?=생)))/);
 var regDay = new RegExp(/((19[0-9][0-9]|20\d{2})(?=년))|((0?[1-9]|1[0-2])(?=월))|(0?([1-9]|[1-2][0-9]|3[0-1])(?=일))/);
 var regCor = new RegExp(/([0-9]{3})-?([0-9]{2})-?([0-9]{5})/);
-var regBank = new RegExp(/[(]?[구|신]?[)]?([가-힣]+)은행/gm);
+// var regBank = new RegExp(/[(]?[구|신]?[)]?(([가-힣]+)(?=은행))/);
+var regBank = new RegExp(/([가-힣]+|[a-z]+|[A-Z]+)(?=은행)/);
 
 const Converter = () => {
   // const [isRRN, setIsRRN] = useState(false);
@@ -59,6 +60,10 @@ const Converter = () => {
     var name = '';
     handleAllCheck(false);
 
+    for (let j = 0; j < 7; j++){
+      data[j].found = 0;
+    }
+
     var text = document.getElementById('text').value;
     var enter = text.split("\n");
     for (let i = 0; i < enter.length; i++) {
@@ -68,6 +73,7 @@ const Converter = () => {
   }
 
   function longTextCheck(enter) {
+
     var name = '';
     var arr = enter.split(" ");
 

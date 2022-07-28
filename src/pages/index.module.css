@@ -82,6 +82,6 @@
   align-self: center;
 }
 .form-check-input:checked {
-  background-color: #000000!important;
+  background-color: #000000;
   border-color: #0d6efd;
 }
