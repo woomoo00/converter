@@ -209,10 +209,10 @@ const Converter = () => {
                 {data?.map((data, key) => (
                   <div key={key}>
                     <div className="form-check">
-                      <input class="form-check-input" type='checkbox' name={`select-${data.id}`}
+                      <input className="form-check-input" type='checkbox' name={`select-${data.id}`}
                         onChange={(e) => handleSingleCheck(e.target.checked, data.id)}
-                        checked={checkItems.includes(data.id) && data.found == 1 ? true : false}
-                        disabled={data.found == 1 ? false : true} />
+                        checked={checkItems.includes(data.id) && data.found === 1 ? true : false}
+                        disabled={data.found === 1 ? false : true} />
                       <label className='form-check-label'>{data.title}</label>
                     </div>
                   </div>
