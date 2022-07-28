@@ -182,7 +182,6 @@ const Converter = () => {
     return false;
   }
   return (
-
     <div>
       <header className={styles.header}>
         BATONERS CONVERTER
@@ -192,27 +191,23 @@ const Converter = () => {
           <div className={styles.input_container}>
             {/* <input type="text" id="text" placeholder="여기에 변환할 텍스트를 입력해주세요" className={styles.input_box} /> */}
             <textarea name="text" id="text" placeholder="여기에 입력" className={styles.input_box}></textarea>
-            <button type="submit" onClick={fn_submit} className={styles.button}>check</button>
+            <button type="submit" onClick={fn_submit} className={styles.button}>변환하기</button>
           </div>
 
           <div className={styles.output_container}>
             <div id="result" className={styles.output_box}></div>
             <div className={styles.output_option_box}>
               <div className={styles.output_option_box_top}>
-              <thead>
-                <tr>
-                  <div className="form-check">
-                    <input className="form-check-input" type='checkbox' name='select-all'
-                      onChange={(e) => handleAllCheck(e.target.checked)}
-                      checked={checkItems.length === data.length ? true : false} />
-                    <label className='form-check-label'>전체선택</label>
-                  </div>
-                </tr>
-              </thead>
+                <div className="form-check">
+                  <input class="form-check-input" type='checkbox' name='select-all'
+                    onChange={(e) => handleAllCheck(e.target.checked)}
+                    checked={checkItems.length === data.length ? true : false} />
+                  <label className='form-check-label'>전체선택</label>
+                </div>
               </div>
               <div className={styles.output_option_box_bottom}>
                 {data?.map((data, key) => (
-                  <tr key={key}>
+                  <div key={key}>
                     <div className="form-check">
                       <input class="form-check-input" type='checkbox' name={`select-${data.id}`}
                         onChange={(e) => handleSingleCheck(e.target.checked, data.id)}
@@ -220,7 +215,7 @@ const Converter = () => {
                         disabled={data.found == 1 ? false : true} />
                       <label className='form-check-label'>{data.title}</label>
                     </div>
-                  </tr>
+                  </div>
                 ))}
               </div>
             </div>
@@ -228,6 +223,7 @@ const Converter = () => {
         </div>
       </div>
     </div>
+
   );
 
 }
