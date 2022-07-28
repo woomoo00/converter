@@ -22,7 +22,7 @@ var regRRN = new RegExp(/([0-9]{2}(?:0[1-9]|1[0-2])(0[1-9]|[1,2][0-9]|3[0,1]))-?
 var regAge = new RegExp(/([0-9]{0,4}((?=세)|(?=살)|(?=생)))/);
 var regDay = new RegExp(/((19[0-9][0-9]|20\d{2})(?=년))|((0?[1-9]|1[0-2])(?=월))|(0?([1-9]|[1-2][0-9]|3[0-1])(?=일))/);
 var regCor = new RegExp(/([0-9]{3})-?([0-9]{2})-?([0-9]{5})/);
-var regBank = new RegExp(/^[(]?[구|신]?[)]?([가-힣]+)은행/gm);
+var regBank = new RegExp(/[(]?[구|신]?[)]?([가-힣]+)은행/gm);
 
 const Converter = () => {
   // const [isRRN, setIsRRN] = useState(false);
@@ -211,8 +211,8 @@ const Converter = () => {
                     <div className="form-check">
                       <input className="form-check-input" type='checkbox' name={`select-${data.id}`}
                         onChange={(e) => handleSingleCheck(e.target.checked, data.id)}
-                        checked={checkItems.includes(data.id) && data.found === 1 ? true : false}
-                        disabled={data.found === 1 ? false : true} />
+                        checked={checkItems.includes(data.id) && data.found == 1 ? true : false}
+                        disabled={data.found == 1 ? false : true} />
                       <label className='form-check-label'>{data.title}</label>
                     </div>
                   </div>
