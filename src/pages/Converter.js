@@ -4,6 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { useState } from "react";
 
+var csv = [];
+var row = [];
+
 const data = [
   { id: 0, title: '전화번호', found: 0, checked: true },
   { id: 1, title: '이메일', found: 0, checked: true },
@@ -60,6 +63,9 @@ const Converter = () => {
     var name = '';
     handleAllCheck(false);
 
+    row = [];
+    csv = [];
+
     for (let j = 0; j < 7; j++){
       data[j].found = 0;
     }
@@ -79,41 +85,64 @@ const Converter = () => {
 
     for (let i = 0; i < arr.length; i++) {
       arr[i].split("\n").join(" ");
+      var converted = '';
+
       if (regPhone.test(arr[i]) === true) {
-        arr[i] = arr[i].replace(/[0-9]/gi, '*');
+        converted = arr[i].replace(/[0-9]/gi, '*');
+        csvGenerator(arr[i], converted);
+
+        arr[i] = converted;
         handleSingleCheck(true, 0);
         data[0].found = 1;
       }
       else if (regEmail.test(arr[i]) === true) {
+        converted = arr[i].replace(/[a-zA-Z0-9]/g, "*");
+        csvGenerator(arr[i], converted);
+
         arr[i] = arr[i].replace(/[a-zA-Z0-9]/g, "*");
         handleSingleCheck(true, 1);
         data[1].found = 1;
       }
       else if (regRRN.test(arr[i]) === true) {
-        arr[i] = arr[i].replace(/[0-9]/gi, '*');
+        converted = arr[i].replace(/[0-9]/gi, '*');
+        csvGenerator(arr[i], converted);
+
+        arr[i] = converted;
         handleSingleCheck(true, 2);
         data[2].found = 1;
       }
       else if (regAge.test(arr[i]) === true) {
-        arr[i] = arr[i].replace(/[0-9]/gi, '*');
+        converted = arr[i].replace(/[0-9]/gi, '*');
+        csvGenerator(arr[i], converted);
+
+        arr[i] = converted;
         handleSingleCheck(true, 3);
         data[3].found = 1;
       }
       else if (regDay.test(arr[i].replaceAll(" ", "")) === true) {
-        arr[i] = arr[i].replace(/[0-9]/gi, '*');
+        converted = arr[i].replace(/[0-9]/gi, '*');
+        csvGenerator(arr[i], converted);
+
+        arr[i] = converted;
         handleSingleCheck(true, 4);
         data[4].found = 1;
       }
       else if (regCor.test(arr[i]) === true) {
         if (CorporateRegNumCheck(arr[i])) {
-          arr[i] = arr[i].replace(/[0-9]/gi, '*');
+          converted = arr[i].replace(/[0-9]/gi, '*');
+          csvGenerator(arr[i], converted);
+
+          arr[i] = converted;
           handleSingleCheck(true, 5);
           data[5].found = 1;
         }
       }
       else if (regBank.test(arr[i]) === true) {
+        converted = "**은행"
+        csvGenerator(arr[i], converted);
+
+        arr[i] = converted;
         handleSingleCheck(true, 6);
-        arr[i] = "**은행";
         data[6].found = 1;
       }
       name += arr[i];
@@ -123,49 +152,69 @@ const Converter = () => {
   }
 
   function userSelectionTotal() {
-    var converted = '';
+    csv = [];
+
+    var changed = '';
     var text = document.getElementById('text').value;
     var enter = text.split("\n");
 
     for (let i = 0; i < enter.length; i++) {
-      converted = converted + userSelection(enter[i]) + '\n';
+      changed = changed + userSelection(enter[i]) + '\n';
     }
-    document.getElementById("result").innerText = converted;
+    document.getElementById("result").innerText = changed;
   }
 
   function userSelection(enter) {
     var name = '';
-    // var text = document.getElementById('text').value;
+    var converted = '';
     var arr = enter.split(' ');
+
+    row = [];
 
     for (let i = 0; i < arr.length; i++) {
       if (regPhone.test(arr[i]) && data[0].checked) {
-        arr[i] = arr[i].replace(/[0-9]/gi, '*');
+        converted = arr[i].replace(/[0-9]/gi, '*');
+        csvGenerator(arr[i], converted);
+        arr[i] = converted;
       }
       else if (regEmail.test(arr[i]) && data[1].checked) {
-        arr[i] = arr[i].replace(/[a-zA-Z0-9]/g, "*");
+        converted = arr[i].replace(/[a-zA-Z0-9]/g, "*");
+        csvGenerator(arr[i], converted);
+        arr[i] = converted;
       }
       else if (regRRN.test(arr[i]) && data[2].checked) {
-        arr[i] = arr[i].replace(/[0-9]/gi, '*');
+        converted = arr[i].replace(/[0-9]/gi, '*');
+        csvGenerator(arr[i], converted);
+        arr[i] = converted;
       }
       else if (regAge.test(arr[i]) && data[3].checked) {
-        arr[i] = arr[i].replace(/[0-9]/gi, '*');
+        converted = arr[i].replace(/[0-9]/gi, '*');
+        csvGenerator(arr[i], converted);
+        arr[i] = converted;
       }
       else if (regDay.test(arr[i]) && data[4].checked) {
-        arr[i] = arr[i].replace(/[0-9]/gi, '*');
+        converted = arr[i].replace(/[0-9]/gi, '*');
+        csvGenerator(arr[i], converted);
+        arr[i] = converted;
       }
       else if (regCor.test(arr[i]) && data[5].checked) {
         if (CorporateRegNumCheck(arr[i])) {
-          arr[i] = arr[i].replace(/[0-9]/gi, '*');
+          converted = arr[i].replace(/[0-9]/gi, '*');
+          csvGenerator(arr[i], converted);
+          arr[i] = converted;
         }
       }
       else if (regBank.test(arr[i]) && data[6].checked) {
-        arr[i] = "**은행";
+        converted = "**은행";
+        csvGenerator(arr[i], converted);
+        arr[i] = converted;
+      }
+      else{
+        converted = '';
       }
       name += arr[i];
       name += ' ';
     }
-    // document.getElementById("result").innerText = name;
     return name;
   }
 
@@ -187,6 +236,38 @@ const Converter = () => {
     }
     return false;
   }
+
+  function csvGenerator(a, b){
+    row.push("'"+ a, b);
+
+    csv.push(row.join(","));
+    row.splice(0, row.length);
+    csv.join("\n");
+  }
+
+  function downloadCsv(){
+    csv = csv.join("\n");
+    let filename = "test.csv";
+
+    var csvFile;
+    let downloadLink;
+    const BOM = "\uFEFF";
+    csv = BOM + csv;
+
+    csvFile = new Blob([csv], {type: "text/csv"});
+
+    downloadLink = document.createElement("a");
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+    document.body.removeChild(downloadLink);
+    userSelectionTotal();
+
+  }
+
   return (
     <div>
       <header className={styles.header}>
@@ -217,8 +298,8 @@ const Converter = () => {
                     <div className="form-check">
                       <input className="form-check-input" type='checkbox' name={`select-${data.id}`}
                         onChange={(e) => handleSingleCheck(e.target.checked, data.id)}
-                        checked={checkItems.includes(data.id) && data.found == 1 ? true : false}
-                        disabled={data.found == 1 ? false : true} />
+                        checked={checkItems.includes(data.id) && data.found === 1 ? true : false}
+                        disabled={data.found === 1 ? false : true} />
                       <label className='form-check-label'>{data.title}</label>
                     </div>
                   </div>
@@ -228,8 +309,10 @@ const Converter = () => {
           </div>
         </div>
       </div>
+      <div className={styles.input_container}>
+            <button type="submit" onClick={downloadCsv} className={styles.button}>csv download</button>
+      </div>
     </div>
-
   );
 
 }
