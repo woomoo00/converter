@@ -66,7 +66,7 @@ const Converter = () => {
     row = [];
     csv = [];
 
-    for (let j = 0; j < 7; j++){
+    for (let j = 0; j < 7; j++) {
       data[j].found = 0;
     }
 
@@ -209,7 +209,7 @@ const Converter = () => {
         csvGenerator(arr[i], converted);
         arr[i] = converted;
       }
-      else{
+      else {
         converted = '';
       }
       name += arr[i];
@@ -237,15 +237,15 @@ const Converter = () => {
     return false;
   }
 
-  function csvGenerator(a, b){
-    row.push("'"+ a, b);
+  function csvGenerator(a, b) {
+    row.push("'" + a, b);
 
     csv.push(row.join(","));
     row.splice(0, row.length);
     csv.join("\n");
   }
 
-  function downloadCsv(){
+  function downloadCsv() {
     csv = csv.join("\n");
     let filename = "test.csv";
 
@@ -254,7 +254,7 @@ const Converter = () => {
     const BOM = "\uFEFF";
     csv = BOM + csv;
 
-    csvFile = new Blob([csv], {type: "text/csv"});
+    csvFile = new Blob([csv], { type: "text/csv" });
 
     downloadLink = document.createElement("a");
     downloadLink.download = filename;
@@ -306,11 +306,12 @@ const Converter = () => {
                 ))}
               </div>
             </div>
+            <div>
+              <button type="submit" onClick={downloadCsv} className={styles.button_rev}>csv download</button>
+            </div>
           </div>
         </div>
-      </div>
-      <div className={styles.input_container}>
-            <button type="submit" onClick={downloadCsv} className={styles.button}>csv download</button>
+
       </div>
     </div>
   );
