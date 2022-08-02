@@ -1,0 +1,45 @@
+# Action의 이름: 자유롭게 설정 가능
+name: Deploying an app to AWS S3
+
+# Action의 발동 조건: main 브랜치에 push 이벤트가 발생할 경우로 설정되어 있음
+on:
+  push:
+    branches:
+      - main
+
+# Action 내용
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout source code. # 레포지토리 체크아웃
+        uses: actions/checkout@v2
+
+      - name: Cache node modules # node modules 캐싱
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+             - name: Install Dependencies # 필요한 라이브러리 설치 (npm install)
+        run: npm install
+
+      - name: Build # React 프로젝트 Build
+        run: CI=false npm run build
+
+      - name: Configure AWS Credentials # AWS 계정 인증
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} # Github Secret: AWS ACCESS KEY
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # Github Secret: AWS SECRET KEY
+          aws-region: ${{ secrets.AWS_REGION }} # Github Secret: AWS REGION
+          mask-aws-account-id: true
+
+      - name: Invalidate CloudFront Cache # CloudFront 캐시 초기화 (Github Secret: AWS CLOUDFRONT DISTRIBUTION ID)
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CDN_DISTRIBUTION_ID }} --paths "/*" 
+
+      - name: Deploy # S3를 통해 배포하기: [s3-bucket-name]을 버킷 이름으로 대체하기
+        run: |
+          aws s3 sync ./build s3://convert-frontend
