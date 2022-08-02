@@ -307,7 +307,7 @@ const Converter = () => {
               </div>
             </div>
             <div>
-              <button type="submit" onClick={downloadCsv} className={styles.button_rev}>csv download</button>
+              <button type="submit" onClick={downloadCsv} className={styles.button_rev}>csv Download</button>
             </div>
           </div>
         </div>

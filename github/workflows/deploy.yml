@@ -26,7 +26,7 @@ jobs:
              - name: Install Dependencies # 필요한 라이브러리 설치 (npm install)
         run: npm install
 
-      - name: Build # React 프로젝트 Build
+      - name: Build  # React 프로젝트 Build
         run: CI=false npm run build
 
       - name: Configure AWS Credentials # AWS 계정 인증
