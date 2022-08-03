@@ -23,10 +23,11 @@ jobs:
           restore-keys: |
             ${{ runner.OS }}-build-
             ${{ runner.OS }}-
-             - name: Install Dependencies # 필요한 라이브러리 설치 (npm install)
+
+      - name: Install Dependencies # 필요한 라이브러리 설치 (npm install)
         run: npm install
 
-      - name: Build  # React 프로젝트 Build
+      - name: Build # React 프로젝트 Build
         run: CI=false npm run build
 
       - name: Configure AWS Credentials # AWS 계정 인증
@@ -38,7 +39,7 @@ jobs:
           mask-aws-account-id: true
 
       - name: Invalidate CloudFront Cache # CloudFront 캐시 초기화 (Github Secret: AWS CLOUDFRONT DISTRIBUTION ID)
-        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CDN_DISTRIBUTION_ID }} --paths "/*" 
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CDN_DISTRIBUTION_ID }} --paths "/*"
 
       - name: Deploy # S3를 통해 배포하기: [s3-bucket-name]을 버킷 이름으로 대체하기
         run: |
