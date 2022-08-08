@@ -12,7 +12,6 @@ root.render(
   <React.StrictMode>
     {/* <App /> */}
     <Converter />
-    <CSV/>
   </React.StrictMode>
 );
 

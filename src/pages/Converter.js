@@ -11,7 +11,6 @@ const data = [
   { id: 0, title: '전화번호', found: 0, checked: true },
   { id: 1, title: '이메일', found: 0, checked: true },
   { id: 2, title: '주민등록번호', found: 0, checked: true },
-  // { id: 3, title: '계좌번호', found: 0, checked: true },
   { id: 3, title: '나이', found: 0, checked: true },
   { id: 4, title: '날짜', found: 0, checked: true },
   { id: 5, title: '사업자등록번호', found: 0, checked: true },
@@ -25,11 +24,9 @@ var regRRN = new RegExp(/([0-9]{2}(?:0[1-9]|1[0-2])(0[1-9]|[1,2][0-9]|3[0,1]))-?
 var regAge = new RegExp(/([0-9]{0,4}((?=세)|(?=살)|(?=생)))/);
 var regDay = new RegExp(/((19[0-9][0-9]|20\d{2})(?=년))|((0?[1-9]|1[0-2])(?=월))|(0?([1-9]|[1-2][0-9]|3[0-1])(?=일))/);
 var regCor = new RegExp(/([0-9]{3})-?([0-9]{2})-?([0-9]{5})/);
-// var regBank = new RegExp(/[(]?[구|신]?[)]?(([가-힣]+)(?=은행))/);
 var regBank = new RegExp(/([가-힣]+|[a-z]+|[A-Z]+)(?=은행)/);
 
 const Converter = () => {
-  // const [isRRN, setIsRRN] = useState(false);
   const [checkItems, setCheckItems] = useState([]);
 
   const handleSingleCheck = (checked, id) => {
@@ -72,6 +69,7 @@ const Converter = () => {
 
     var text = document.getElementById('text').value;
     var enter = text.split("\n");
+
     for (let i = 0; i < enter.length; i++) {
       name = name + longTextCheck(enter[i]) + '\n';
     }
@@ -268,6 +266,28 @@ const Converter = () => {
 
   }
 
+  function openTextFile() {
+    var input = document.createElement("input");
+
+    input.type = "file";
+    input.accept = "text/plain";
+
+    input.onchange = function(event){
+      processFile(event.target.files[0]);
+    };
+
+    input.click();
+  }
+
+  function processFile(file){
+    var reader = new FileReader();
+    reader.onload = function() {
+      // document.getElementById('output').innerText = reader.result;
+      document.getElementById('text').value = reader.result;
+    };
+    reader.readAsText(file, "UTF-8");
+  }
+
   return (
     <div>
       <header className={styles.header}>
@@ -277,6 +297,7 @@ const Converter = () => {
         <div className={styles.converter_container}>
           <div className={styles.input_container}>
             {/* <input type="text" id="text" placeholder="여기에 변환할 텍스트를 입력해주세요" className={styles.input_box} /> */}
+            <button type="button" onClick={openTextFile} className={styles.open_txt}>Open txt File</button>
             <textarea name="text" id="text" placeholder="여기에 입력" className={styles.input_box}></textarea>
             <button type="submit" onClick={fn_submit} className={styles.button}>변환하기</button>
           </div>
