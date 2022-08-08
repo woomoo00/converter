@@ -63,7 +63,7 @@ const Converter = () => {
     row = [];
     csv = [];
 
-    for (let j = 0; j < 7; j++){
+    for (let j = 0; j < 7; j++) {
       data[j].found = 0;
     }
 
@@ -207,7 +207,7 @@ const Converter = () => {
         csvGenerator(arr[i], converted);
         arr[i] = converted;
       }
-      else{
+      else {
         converted = '';
       }
       name += arr[i];
@@ -235,15 +235,15 @@ const Converter = () => {
     return false;
   }
 
-  function csvGenerator(a, b){
-    row.push("'"+ a, b);
+  function csvGenerator(a, b) {
+    row.push("'" + a, b);
 
     csv.push(row.join(","));
     row.splice(0, row.length);
     csv.join("\n");
   }
 
-  function downloadCsv(){
+  function downloadCsv() {
     csv = csv.join("\n");
     let filename = "test.csv";
 
@@ -252,7 +252,7 @@ const Converter = () => {
     const BOM = "\uFEFF";
     csv = BOM + csv;
 
-    csvFile = new Blob([csv], {type: "text/csv"});
+    csvFile = new Blob([csv], { type: "text/csv" });
 
     downloadLink = document.createElement("a");
     downloadLink.download = filename;
@@ -288,51 +288,79 @@ const Converter = () => {
     reader.readAsText(file, "UTF-8");
   }
 
+  function openTextFile() {
+    var input = document.createElement("input");
+
+    input.type = "file";
+    input.accept = "text/plain";
+
+    input.onchange = function(event){
+      processFile(event.target.files[0]);
+    };
+
+    input.click();
+  }
+
+  function processFile(file){
+    var reader = new FileReader();
+    reader.onload = function() {
+      // document.getElementById('output').innerText = reader.result;
+      document.getElementById('text').value = reader.result;
+    };
+    reader.readAsText(file, "UTF-8");
+  }
+
   return (
     <div>
       <header className={styles.header}>
         BATONERS CONVERTER
       </header>
-      <div className={styles.container}>
-        <div className={styles.converter_container}>
-          <div className={styles.input_container}>
-            {/* <input type="text" id="text" placeholder="여기에 변환할 텍스트를 입력해주세요" className={styles.input_box} /> */}
-            <button type="button" onClick={openTextFile} className={styles.open_txt}>Open txt File</button>
-            <textarea name="text" id="text" placeholder="여기에 입력" className={styles.input_box}></textarea>
-            <button type="submit" onClick={fn_submit} className={styles.button}>변환하기</button>
+      <div class="container overflow-hidden">
+        <div class="row">
+          <div class="col-md">
+            <div className={styles.input_container}>
+              {/* <input type="text" id="text" placeholder="여기에 변환할 텍스트를 입력해주세요" className={styles.input_box} /> */}
+              <button type="button" onClick={openTextFile} className={styles.open_txt}>Open txt File</button>
+              <textarea name="text" id="text" placeholder="여기에 입력" className={styles.input_box}></textarea>
+              <button type="submit" onClick={fn_submit} className={styles.button}>변환하기</button>
+            </div>
           </div>
 
-          <div className={styles.output_container}>
-            <div id="result" className={styles.output_box}></div>
-            <div className={styles.output_option_box}>
-              <div className={styles.output_option_box_top}>
-                <div className="form-check">
-                  <input class="form-check-input" type='checkbox' name='select-all'
-                    onChange={(e) => handleAllCheck(e.target.checked)}
-                    checked={checkItems.length === data.length ? true : false} />
-                  <label className='form-check-label'>전체선택</label>
+          <div class="col-md">
+            <div className={styles.output_container}>
+              <div id="result" className={styles.output_box}></div>
+              <div className={styles.output_option_box}>
+                <div className={styles.output_option_box_top}>
+                  <div className="form-check">
+                    <input class="form-check-input" type='checkbox' name='select-all'
+                      onChange={(e) => handleAllCheck(e.target.checked)}
+                      checked={checkItems.length === data.length ? true : false} />
+                    <label className='form-check-label'>전체선택</label>
+                  </div>
+                </div>
+                <div className={styles.output_option_box_bottom}>
+                  {data?.map((data, key) => (
+                    <div key={key}>
+                      <div className="form-check">
+                        <input className="form-check-input" type='checkbox' name={`select-${data.id}`}
+                          onChange={(e) => handleSingleCheck(e.target.checked, data.id)}
+                          checked={checkItems.includes(data.id) && data.found === 1 ? true : false}
+                          disabled={data.found === 1 ? false : true} />
+                        <label className='form-check-label'>{data.title}</label>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div className={styles.output_option_box_bottom}>
-                {data?.map((data, key) => (
-                  <div key={key}>
-                    <div className="form-check">
-                      <input className="form-check-input" type='checkbox' name={`select-${data.id}`}
-                        onChange={(e) => handleSingleCheck(e.target.checked, data.id)}
-                        checked={checkItems.includes(data.id) && data.found === 1 ? true : false}
-                        disabled={data.found === 1 ? false : true} />
-                      <label className='form-check-label'>{data.title}</label>
-                    </div>
-                  </div>
-                ))}
+              <div>
+                <button type="submit" onClick={downloadCsv} className={styles.button_rev}>csv Download</button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className={styles.input_container}>
-            <button type="submit" onClick={downloadCsv} className={styles.button}>csv download</button>
-      </div>
+      </div>  
+      <footer className={styles.footer}>
+      </footer>    
     </div>
   );
 

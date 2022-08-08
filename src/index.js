@@ -4,7 +4,6 @@ import './index.css';
 // import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Converter from './pages/Converter';
-import CSV from './pages/CSV';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
