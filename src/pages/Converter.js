@@ -1,12 +1,12 @@
 import styles from "./index.module.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import '../styles/global.css'
 
 import { useState } from "react";
 
 var csv = [];
 var row = [];
 
+//체크박스에 데이터를 추가/삭제 하고싶다면 이 부분만 변경하면 됨
 const data = [
   { id: 0, title: '전화번호', found: 0, checked: true },
   { id: 1, title: '이메일', found: 0, checked: true },
@@ -17,7 +17,7 @@ const data = [
   { id: 6, title: '은행명', found: 0, checked: true },
 ]
 
-//RegExp
+//정규식
 var regPhone = new RegExp(/01(?:0|1|[6-9])-?(?:\d{3}|\d{4})-?\d{4}/);
 var regEmail = new RegExp(/[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}/i);
 var regRRN = new RegExp(/([0-9]{2}(?:0[1-9]|1[0-2])(0[1-9]|[1,2][0-9]|3[0,1]))-?[1-4][0-9]{6}/i);
@@ -29,6 +29,7 @@ var regBank = new RegExp(/([가-힣]+|[a-z]+|[A-Z]+)(?=은행)/);
 const Converter = () => {
   const [checkItems, setCheckItems] = useState([]);
 
+  //단일 체크박스 체크/해제 되었을 때
   const handleSingleCheck = (checked, id) => {
     if (checked) {
       setCheckItems(prev => [...prev, id]);
@@ -41,6 +42,7 @@ const Converter = () => {
     }
   };
 
+  //체크박스 전체선택/해제 되었을 때
   const handleAllCheck = (checked) => {
     if (checked) {
       const idArray = [];
@@ -55,13 +57,14 @@ const Converter = () => {
     userSelectionTotal();
   }
 
-
+  //'변환하기'를 눌렀을 때 실행되는 함수
+  //fn_submit()에서 엔터 기준으로 자른 뒤 convert에서 띄어쓰기 기준으로 파싱
   function fn_submit() {
     var name = '';
     handleAllCheck(false);
 
     row = [];
-    csv = [];
+    csv = []; 
 
     for (let j = 0; j < 7; j++) {
       data[j].found = 0;
@@ -71,13 +74,15 @@ const Converter = () => {
     var enter = text.split("\n");
 
     for (let i = 0; i < enter.length; i++) {
-      name = name + longTextCheck(enter[i]) + '\n';
+      name = name + convert(enter[i]) + '\n';
     }
     document.getElementById("result").innerText = name;
   }
 
-  function longTextCheck(enter) {
-
+  // 띄어쓰기 기준으로 자른 단어들에 대해, 
+  // 일치하는 정규식이 있다면 해당 정보를 *로 마스킹하고 변환 로그에 추가
+  // 하나라도 해당 개인정보가 있다면 체크박스 'checked'로 변경, 하나도 없다면 비활성화(비활성화 하는 코드는 )
+  function convert(enter) {
     var name = '';
     var arr = enter.split(" ");
 
@@ -87,7 +92,7 @@ const Converter = () => {
 
       if (regPhone.test(arr[i]) === true) {
         converted = arr[i].replace(/[0-9]/gi, '*');
-        csvGenerator(arr[i], converted);
+        csvGenerator(arr[i], converted); 
 
         arr[i] = converted;
         handleSingleCheck(true, 0);
@@ -149,6 +154,7 @@ const Converter = () => {
     return name;
   }
 
+  //fn_submit()과 같은 동작을 하는 함수, 체크박스 선택 / 해제에 따라서 실시간으로 변환 결과 바꾸는 코드
   function userSelectionTotal() {
     csv = [];
 
@@ -162,6 +168,7 @@ const Converter = () => {
     document.getElementById("result").innerText = changed;
   }
 
+  //convert()와 같은 동작
   function userSelection(enter) {
     var name = '';
     var converted = '';
@@ -216,7 +223,8 @@ const Converter = () => {
     return name;
   }
 
-
+  //사업자등록번호는 아래의 형식을 만족해야 사업자 등록번호로 인정함.
+  //그냥 숫자 10자리로는 통과할 수 없음. 유효한 사업자번호임을 체크.
   function CorporateRegNumCheck(number) {
     var numMap = number.replace(/-/gi, '').split('').map(function (d) {
       return parseInt(d, 10);
@@ -235,6 +243,7 @@ const Converter = () => {
     return false;
   }
 
+  //csv 파일 생성
   function csvGenerator(a, b) {
     row.push("'" + a, b);
 
@@ -243,6 +252,7 @@ const Converter = () => {
     csv.join("\n");
   }
 
+  //csv 파일 다운로드
   function downloadCsv() {
     csv = csv.join("\n");
     let filename = "test.csv";
@@ -266,6 +276,7 @@ const Converter = () => {
 
   }
 
+  //txt 파일을 업로드하는 기능
   function openTextFile() {
     var input = document.createElement("input");
 
@@ -279,32 +290,10 @@ const Converter = () => {
     input.click();
   }
 
+  //txt 파일을 FileReader()로 읽어와 input 박스에 넣어주는 함수
   function processFile(file){
     var reader = new FileReader();
     reader.onload = function() {
-      // document.getElementById('output').innerText = reader.result;
-      document.getElementById('text').value = reader.result;
-    };
-    reader.readAsText(file, "UTF-8");
-  }
-
-  function openTextFile() {
-    var input = document.createElement("input");
-
-    input.type = "file";
-    input.accept = "text/plain";
-
-    input.onchange = function(event){
-      processFile(event.target.files[0]);
-    };
-
-    input.click();
-  }
-
-  function processFile(file){
-    var reader = new FileReader();
-    reader.onload = function() {
-      // document.getElementById('output').innerText = reader.result;
       document.getElementById('text').value = reader.result;
     };
     reader.readAsText(file, "UTF-8");
@@ -319,8 +308,7 @@ const Converter = () => {
         <div class="row">
           <div class="col-md">
             <div className={styles.input_container}>
-              {/* <input type="text" id="text" placeholder="여기에 변환할 텍스트를 입력해주세요" className={styles.input_box} /> */}
-              <button type="button" onClick={openTextFile} className={styles.open_txt}>Open txt File</button>
+              <button type="button" onClick={openTextFile} className={styles.open_txt}>txt 파일 열기</button>
               <textarea name="text" id="text" placeholder="여기에 입력" className={styles.input_box}></textarea>
               <button type="submit" onClick={fn_submit} className={styles.button}>변환하기</button>
             </div>
@@ -353,7 +341,7 @@ const Converter = () => {
                 </div>
               </div>
               <div>
-                <button type="submit" onClick={downloadCsv} className={styles.button_rev}>csv Download</button>
+                <button type="submit" onClick={downloadCsv} className={styles.button_rev}>csv 파일 다운로드</button>
               </div>
             </div>
           </div>
