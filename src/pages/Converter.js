@@ -1,7 +1,6 @@
 import styles from "./index.module.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 var csv = [];
 var row = [];
@@ -279,9 +278,8 @@ const Converter = () => {
   //txt 파일을 업로드하는 기능
   function openTextFile() {
     var input = document.createElement("input");
-
     input.type = "file";
-    input.accept = "text/plain";
+    input.accept = ".txt";
 
     input.onchange = function(event){
       processFile(event.target.files[0]);
@@ -299,6 +297,24 @@ const Converter = () => {
     reader.readAsText(file, "UTF-8");
   }
 
+  //txt 파일 다운로드
+  function downloadTxt(){
+    var fileName = "test.txt";
+    var content = document.getElementById('result').innerText;
+
+    var blob = new Blob([content], {type: "text/plain"});
+    let downloadLink = document.createElement("a");
+    downloadLink.download = fileName;
+    downloadLink.href = window.URL.createObjectURL(blob);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+    document.body.removeChild(downloadLink);
+    userSelectionTotal();
+  }
+
+
   return (
     <div>
       <header className={styles.header}>
@@ -308,7 +324,9 @@ const Converter = () => {
         <div class="row">
           <div class="col-md">
             <div className={styles.input_container}>
-              <button type="button" onClick={openTextFile} className={styles.open_txt}>txt 파일 열기</button>
+              <div class="drop-zone"> 
+              <button type="button" onClick={openTextFile} className={styles.open_txt}>로컬에서 불러오기</button>
+              </div>
               <textarea name="text" id="text" placeholder="여기에 입력" className={styles.input_box}></textarea>
               <button type="submit" onClick={fn_submit} className={styles.button}>변환하기</button>
             </div>
@@ -341,11 +359,16 @@ const Converter = () => {
                 </div>
               </div>
               <div>
+
                 <button type="submit" onClick={downloadCsv} className={styles.button_rev}>csv 파일 다운로드</button>
+                <button type="submit" onClick={downloadTxt} className={styles.button_rev}>txt 파일 다운로드</button>
+                {/* <button type="submit" id="hi" onClick={Input} className={styles.button_rev}>pdf 파일 다운로드</button> */}
+                
               </div>
             </div>
           </div>
         </div>
+        
       </div>  
       <footer className={styles.footer}>
       </footer>    
