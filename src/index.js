@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
-import Converter from './pages/Converter';
+import Converter from './pages/_app';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
