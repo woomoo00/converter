@@ -1,14 +1,9 @@
 import styles from "./index.module.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from "react";
-import { FileUploader } from "react-drag-drop-files";
-import { BsDownload } from "react-icons/bs";
-// import { PDFDownloadLink, Document, Page } from '@react-pdf/renderer';
 
 var csv = [];
 var row = [];
-
-const fileTypes = ['TXT'];
 
 //체크박스에 데이터를 추가/삭제 하고싶다면 이 부분만 변경하면 됨
 const data = [
@@ -19,29 +14,22 @@ const data = [
   { id: 4, title: '날짜', found: 0, checked: true },
   { id: 5, title: '사업자등록번호', found: 0, checked: true },
   { id: 6, title: '은행명', found: 0, checked: true },
+  { id: 7, title: '학번', found: 0, checked: true},
 ]
 
-//정규식
+
+//정규식s
 var regPhone = new RegExp(/01(?:0|1|[6-9])-?(?:\d{3}|\d{4})-?\d{4}/);
 var regEmail = new RegExp(/[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}/i);
 var regRRN = new RegExp(/([0-9]{2}(?:0[1-9]|1[0-2])(0[1-9]|[1,2][0-9]|3[0,1]))-?[1-4][0-9]{6}/i);
 var regAge = new RegExp(/([0-9]{0,4}((?=세)|(?=살)|(?=생)))/);
-var regDay = new RegExp(/((19[0-9][0-9]|20\d{2})(?=년))|((0?[1-9]|1[0-2])(?=월))|(0?([1-9]|[1-2][0-9]|3[0-1])(?=일))/);
+var regDay = new RegExp(/(((19[0-9][0-9]|20\d{2})|[0-9]{2})(?=년))|((0?[1-9]|1[0-2])(?=월))|(0?([1-9]|[1-2][0-9]|3[0-1])(?=일))/);
 var regCor = new RegExp(/([0-9]{3})-?([0-9]{2})-?([0-9]{5})/);
 var regBank = new RegExp(/([가-힣]+|[a-z]+|[A-Z]+)(?=은행)/);
+var regSN = new RegExp(/(([0-9]{2})(?=학번))|((19[0-9][0-9])|(20(0[0-9]|1[0-9]|2[0-2]))([0-9]{4}))/);
 
 const Converter = () => {
   const [checkItems, setCheckItems] = useState([]);
-  // const [file, setFile] = useState(null);
-  const handleChange = (file) => {
-    // setFile(file);
-    var input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".txt";
-    input = file;
-    console.log(input);
-    processFile(input);
-  };
 
   //단일 체크박스 체크/해제 되었을 때
   const handleSingleCheck = (checked, id) => {
@@ -78,9 +66,9 @@ const Converter = () => {
     handleAllCheck(false);
 
     row = [];
-    csv = [];
+    csv = []; 
 
-    for (let j = 0; j < 7; j++) {
+    for (let j = 0; j < 8; j++) {
       data[j].found = 0;
     }
 
@@ -106,7 +94,7 @@ const Converter = () => {
 
       if (regPhone.test(arr[i]) === true) {
         converted = arr[i].replace(/[0-9]/gi, '*');
-        csvGenerator(arr[i], converted);
+        csvGenerator(arr[i], converted); 
 
         arr[i] = converted;
         handleSingleCheck(true, 0);
@@ -161,6 +149,13 @@ const Converter = () => {
         arr[i] = converted;
         handleSingleCheck(true, 6);
         data[6].found = 1;
+      }
+      else if (regSN.test(arr[i]) === true) {
+        converted = arr[i].replace(/[0-9]/gi, '*');
+        csvGenerator(arr[i], converted);
+        arr[i] = converted;
+        handleSingleCheck(true, 7);
+        data[7].found = 1;
       }
       name += arr[i];
       name += ' ';
@@ -227,6 +222,11 @@ const Converter = () => {
         converted = "**은행";
         csvGenerator(arr[i], converted);
         arr[i] = converted;
+      }      
+      else if (regSN.test(arr[i]) && data[7].checked) {
+        converted = "**학번"
+        csvGenerator(arr[i], converted);
+        arr[i] = converted;
       }
       else {
         converted = '';
@@ -291,33 +291,33 @@ const Converter = () => {
   }
 
   //txt 파일을 업로드하는 기능
-  // function openTextFile() {
-  //   var input = document.createElement("input");
-  //   input.type = "file";
-  //   input.accept = ".txt";
+  function openTextFile() {
+    var input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".txt";
 
-  //   input.onchange = function (event) {
-  //     processFile(event.target.files[0]);
-  //   };
+    input.onchange = function(event){
+      processFile(event.target.files[0]);
+    };
 
-  //   input.click();
-  // }
+    input.click();
+  }
 
   //txt 파일을 FileReader()로 읽어와 input 박스에 넣어주는 함수
-  function processFile(file) {
+  function processFile(file){
     var reader = new FileReader();
-    reader.onload = function () {
+    reader.onload = function() {
       document.getElementById('text').value = reader.result;
     };
     reader.readAsText(file, "UTF-8");
   }
 
   //txt 파일 다운로드
-  function downloadTxt() {
+  function downloadTxt(){
     var fileName = "test.txt";
     var content = document.getElementById('result').innerText;
 
-    var blob = new Blob([content], { type: "text/plain" });
+    var blob = new Blob([content], {type: "text/plain"});
     let downloadLink = document.createElement("a");
     downloadLink.download = fileName;
     downloadLink.href = window.URL.createObjectURL(blob);
@@ -339,16 +339,8 @@ const Converter = () => {
         <div class="row">
           <div class="col-md">
             <div className={styles.input_container}>
-              <div className={styles.drop_zone}>
-                <div class="drop-zone">
-                  <FileUploader
-                    multiple={false}
-                    handleChange={handleChange}
-                    name="file"
-                    types={fileTypes}
-                    children={<div className={styles.upload_box}><p>Upload or drop a file</p></div>}
-                  />
-                </div>
+              <div class="drop-zone"> 
+              <button type="button" onClick={openTextFile} className={styles.open_txt}>로컬에서 불러오기</button>
               </div>
               <textarea name="text" id="text" placeholder="여기에 입력" className={styles.input_box}></textarea>
               <button type="submit" onClick={fn_submit} className={styles.button}>변환하기</button>
@@ -381,20 +373,20 @@ const Converter = () => {
                   ))}
                 </div>
               </div>
-              <div className={styles.button_container}>
+              <div>
 
-                <button type="submit" onClick={downloadCsv} className={styles.button_inline}><BsDownload/> 변환내역 csv로 다운로드</button>
-                <button type="submit" onClick={downloadTxt} className={styles.button_inline}><BsDownload/> 변환파일 txt로 다운로드</button>
+                <button type="submit" onClick={downloadCsv} className={styles.button_rev}>csv 파일 다운로드</button>
+                <button type="submit" onClick={downloadTxt} className={styles.button_rev}>txt 파일 다운로드</button>
                 {/* <button type="submit" id="hi" onClick={Input} className={styles.button_rev}>pdf 파일 다운로드</button> */}
-
+                
               </div>
             </div>
           </div>
         </div>
-
-      </div>
+        
+      </div>  
       <footer className={styles.footer}>
-      </footer>
+      </footer>    
     </div>
   );
 
